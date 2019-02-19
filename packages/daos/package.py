@@ -55,17 +55,17 @@ class Daos(SConsPackage):
     depends_on('go', type='build')
 
     patch('hwloc.patch')
+    patch('go.patch')
 
     def build_args(self, spec, prefix):
         args = [
-#            '--prepend-path={0}'.format(join_path(spec['go'].prefix,'bin')),
-            'PREFIX:={0}'.format(prefix),
+            'PREFIX={0}'.format(prefix),
             'ARGOBOTS_PREBUILT={0}'.format(spec['argobots'].prefix),
             'CART_PREBUILT={0}'.format(spec['cart'].prefix),
             'CMOCKA_PREBUILT={0}'.format(spec['cmocka'].prefix),
             'CRYPTO_PREBUILT={0}'.format(spec['openssl'].prefix),
             'FUSE_PREBUILT={0}'.format(spec['fuse3'].prefix),
-            'GOPATH={0}'.format(spec['go'].prefix),
+            'GO_PREBUILT={0}'.format(spec['go'].prefix),
             'HWLOC_PREBUILT={0}'.format(spec['hwloc'].prefix),
             'ISAL_PREBUILT={0}'.format(spec['isa-l'].prefix),
             'OMPI_PREBUILT={0}'.format(spec['openmpi'].prefix),

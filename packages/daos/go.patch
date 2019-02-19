@@ -1,0 +1,84 @@
+diff --git a/SConstruct b/SConstruct
+index a7dce604..92394071 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -47,7 +47,7 @@ def preload_prereqs(prereqs):
+     prereqs.define('readline', libs=['readline', 'history'],
+                    package='readline')
+     reqs = ['cart', 'argobots', 'pmdk', 'cmocka',
+-            'uuid', 'crypto', 'fuse', 'protobufc', 'hwloc', 'ompi']
++            'uuid', 'crypto', 'fuse', 'protobufc', 'hwloc', 'ompi', 'go']
+     if not is_platform_arm():
+         reqs.extend(['spdk', 'isal'])
+     prereqs.load_definitions(prebuild=reqs)
+
+diff --git a/scons_local/components/__init__.py b/scons_local/components/__init__.py
+index 3ddf2c0..8603906 100644
+--- a/scons_local/components/__init__.py
++++ b/scons_local/components/__init__.py
+@@ -134,6 +134,8 @@ def define_common(reqs):
+     reqs.define('crypto', libs=['crypto'], headers=['openssl/md5.h'],
+                 package='openssl-devel')
+ 
++    reqs.define('go', package='golang')
++
+     if reqs.get_env('PLATFORM') == 'darwin':
+         reqs.define('uuid', headers=['uuid/uuid.h'])
+     else:
+
+diff --git a/src/control/SConscript b/src/control/SConscript
+index 7de8ecbf..88fcca88 100644
+--- a/src/control/SConscript
++++ b/src/control/SConscript
+@@ -27,7 +27,7 @@ def scons():
+     env.AppendUnique(LIBPATH=[Dir('.')])
+
+     denv = env.Clone()
+-    prereqs.require(denv, 'spdk')
++    prereqs.require(denv, 'spdk', 'go')
+
+     # if SPDK_PREFIX differs from PREFIX, copy dir so files can be accessed at
+     # runtime
+@@ -54,11 +54,15 @@ def scons():
+
+     path = "%s/src/%s/src" % (gopath, repopath)
+
++    if denv.subst("$GO_PREFIX"):
++        gobin = join(denv.subst("$GO_PREFIX"), "bin", "go")
++    else:
++        gobin = "go"
+     agentbin = "%s/bin/agent" % gopath
+     agentsrc = "%s/agent/main.go" % gosrc
+     denv.Command(agentbin, agentsrc,
+                  cmd_build(path, gosrc,
+-                           "go install %s/src/control/agent" % repopath))
++                           "%s install %s/src/control/agent" % (gobin,repopath)))
+     denv.InstallAs("$PREFIX/bin/daos_agent", agentbin)
+
+     gospdkpath = "%s/vendor/github.com/daos-stack/go-spdk/spdk" % gosrc
+@@ -102,21 +106,21 @@ def scons():
+     serversrc = "%s/server/main.go" % gosrc
+     denv.Command(serverbin, [serversrc, nc_installed],
+                  cmd_build(path, gosrc,
+-                           "go install %s/src/control/server" % repopath))
++                           "%s install %s/src/control/server" % (gobin,repopath)))
+     denv.InstallAs("$PREFIX/bin/daos_server", serverbin)
+
+     shellbin = "%s/bin/dmg" % gopath
+     shellsrc = "%s/dmg/main.go" % gosrc
+     denv.Command(shellbin, shellsrc,
+                  cmd_build(path, gosrc,
+-                           "go install %s/src/control/dmg" % repopath))
++                           "%s install %s/src/control/dmg" % (gobin,repopath)))
+     denv.InstallAs("$PREFIX/bin/daos_shell", shellbin)
+
+     drpcbin = "%s/bin/drpc_test" % gopath
+     drpcsrc = "%s/drpc_test/main.go" % gosrc
+     denv.Command(drpcbin, drpcsrc,
+                  cmd_build(path, gosrc,
+-                           "go install %s/src/control/drpc_test" % repopath))
++                           "%s install %s/src/control/drpc_test" % (gobin,repopath)))
+     denv.InstallAs("$PREFIX/bin/hello_drpc", drpcbin)
+
+     AlwaysBuild([agentbin, serverbin, shellbin, drpcbin])
+
