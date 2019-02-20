@@ -36,7 +36,7 @@ class Cart(SConsPackage):
     depends_on('boost', type='build')
     depends_on('cmocka', type='build')
     depends_on('mercury@1.0.0:+boostsys')
-    depends_on('openmpi@develop+pmix')
+    depends_on('openmpi+pmix')
     depends_on('openssl')
     depends_on('libuuid')
 

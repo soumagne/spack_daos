@@ -45,7 +45,7 @@ class Daos(SConsPackage):
     depends_on('hwloc@:1.999')
     depends_on('isa-l')
     depends_on('libuuid')
-    depends_on('openmpi@develop+pmix')
+    depends_on('openmpi+pmix')
     depends_on('openssl')
     depends_on('pmdk')
     depends_on('protobuf-c@1.3:')
