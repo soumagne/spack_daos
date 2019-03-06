@@ -29,9 +29,10 @@ class Cart(SConsPackage):
     """Collective and RPC Transport (CaRT)"""
 
     homepage = 'https://github.com/daos-stack/cart'
-    git      = 'https://review.hpdd.intel.com/daos/cart.git'
+    git      = 'https://github.com/daos-stack/cart.git'
 
     version('develop', branch='master', submodules=True, preferred=True)
+    version('2019-03-04', commit='430cbb4071f4d0afd99d73602e338c807aac673c', submodules=True)
 
     depends_on('boost', type='build')
     depends_on('cmocka', type='build')

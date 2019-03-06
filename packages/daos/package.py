@@ -31,15 +31,17 @@ class Daos(SConsPackage):
        distributed Non Volatile Memory (NVM)."""
 
     homepage = 'https://github.com/daos-stack/daos'
-    git      = 'https://review.hpdd.intel.com/daos/daos_m.git'
+    git      = 'https://github.com/daos-stack/daos.git'
 
-    version('develop', branch='master', submodules=True, preferred=True)
+    version('develop', branch='master', submodules=True)
+    version('2019-03-05', commit='4a12f52a477ac774672a4131cba7c4ab37fa040f', submodules=True, preferred=True)
 
     variant('debug', default=False,
             description='Enable debugging info and strict compile warnings')
 
     depends_on('argobots@develop')
-    depends_on('cart@develop')
+    depends_on('cart@develop', when='@develop')
+    depends_on('cart@2019-03-04', when='@2019-03-05')
     depends_on('cmocka', type='build')
     depends_on('fuse3')
     depends_on('hwloc@:1.999')
@@ -54,8 +56,7 @@ class Daos(SConsPackage):
 
     depends_on('go', type='build')
 
-    patch('hwloc.patch')
-    patch('go.patch')
+    patch('prereq.patch')
 
     def build_args(self, spec, prefix):
         args = [
