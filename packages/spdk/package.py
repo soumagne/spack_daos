@@ -29,6 +29,8 @@ class Spdk(AutotoolsPackage):
 
     depends_on('nasm@2.12.02:', type='build')
     depends_on('fio@3.3', when='+fio')
+    depends_on('numactl')
+    depends_on('libaio')
 
     #patch('spdk_shared.patch')
     #patch('spdk_shared_dpdk.patch')
