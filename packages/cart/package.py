@@ -31,9 +31,9 @@ class Cart(SConsPackage):
     homepage = 'https://github.com/daos-stack/cart'
     git      = 'https://github.com/daos-stack/cart.git'
 
-    version('develop', branch='master', submodules=True)
-    version('2019-05-25', commit='99fd1cad76ad026f278f5a04ab1c5f33e8fde284', submodules=True)
-    version('2019-03-04', commit='430cbb4071f4d0afd99d73602e338c807aac673c', submodules=True)
+    version('master', branch='master', submodules=True)
+    version('daos-0.5', commit='ad94f7f36c4e8398d14576d393dfe66b3ea4713a', submodules=True)
+    version('daos-0.4', commit='24c97eab7b97df49e8e26a4618157a806e92cbad', submodules=True)
 
     depends_on('boost', type='build')
     depends_on('cmocka', type='build')

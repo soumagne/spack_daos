@@ -33,17 +33,17 @@ class Daos(SConsPackage):
     homepage = 'https://github.com/daos-stack/daos'
     git      = 'https://github.com/daos-stack/daos.git'
 
-    version('develop', branch='master', submodules=True)
-    version('2019-05-29', commit='eac79b423ff83075ec84d2e4e63c7ab67953fb42', submodules=True)
-    version('2019-03-05', commit='4a12f52a477ac774672a4131cba7c4ab37fa040f', submodules=True)
+    version('master', branch='master', submodules=True)
+    version('0.5', tag='v0.5', submodules=True)
+    version('0.4', tag='v0.4', submodules=True)
 
     variant('debug', default=False,
             description='Enable debugging info and strict compile warnings')
 
     depends_on('argobots@develop')
-    depends_on('cart@develop', when='@develop')
-    depends_on('cart@2019-03-04', when='@2019-03-05')
-    depends_on('cart@2019-05-25', when='@2019-05-29')
+    depends_on('cart@master', when='@master')
+    depends_on('cart@daos-0.5', when='@0.5')
+    depends_on('cart@daos-0.4', when='@0.4')
     depends_on('cmocka', type='build')
     depends_on('fuse3')
     depends_on('hwloc@:1.999')
