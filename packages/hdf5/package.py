@@ -59,7 +59,6 @@ class Hdf5(AutotoolsPackage):
     variant('szip', default=False, description='Enable szip support')
     variant('pic', default=True,
             description='Produce position-independent code (for shared libs)')
-    variant('mobject', default=False, description='Enable support for MObject')
 
     depends_on('autoconf', type='build', when='@develop')
     depends_on('automake', type='build', when='@develop')
