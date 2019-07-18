@@ -32,6 +32,8 @@ class Cart(SConsPackage):
     git      = 'https://github.com/daos-stack/cart.git'
 
     version('master', branch='master', submodules=True)
+    version('daos-devel', branch='daos_devel', submodules=True)
+    version('daos-0.6', commit='7bde2eaec684faa02372caca464b96136348aad4', submodules=True)
     version('daos-0.5', commit='ad94f7f36c4e8398d14576d393dfe66b3ea4713a', submodules=True)
     version('daos-0.4', commit='24c97eab7b97df49e8e26a4618157a806e92cbad', submodules=True)
 
@@ -44,6 +46,7 @@ class Cart(SConsPackage):
     depends_on('libyaml')
 
     patch('cart_include.patch')
+    patch('werror.patch')
 
     def build_args(self, spec, prefix):
         args = [

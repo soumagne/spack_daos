@@ -34,6 +34,7 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
+    version('0.6', tag='v0.6', submodules=True)
     version('0.5', tag='v0.5', submodules=True)
     version('0.4', tag='v0.4', submodules=True)
 
@@ -41,9 +42,10 @@ class Daos(SConsPackage):
             description='Enable debugging info and strict compile warnings')
 
     depends_on('argobots@develop')
-    depends_on('cart@master', when='@master')
-    depends_on('cart@daos-0.5', when='@0.5')
-    depends_on('cart@daos-0.4', when='@0.4')
+    depends_on('cart@daos-devel', when='@master')
+    depends_on('cart@daos-0.6',   when='@0.6')
+    depends_on('cart@daos-0.5',   when='@0.5')
+    depends_on('cart@daos-0.4',   when='@0.4')
     depends_on('cmocka', type='build')
     depends_on('fuse3')
     depends_on('hwloc@:1.999')
@@ -53,9 +55,9 @@ class Daos(SConsPackage):
     depends_on('openmpi+pmix')
     depends_on('openssl')
     depends_on('pmdk')
-    depends_on('protobuf-c@1.3:')
+    depends_on('protobuf-c@1.3.1')
     depends_on('readline')
-    depends_on('spdk@:18.07.1+fio')
+    depends_on('spdk@18.07.1+fio')
 
     depends_on('go', type='build')
 
