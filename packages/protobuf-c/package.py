@@ -17,13 +17,14 @@ class ProtobufC(AutotoolsPackage):
     """
 
     homepage = "https://github.com/protobuf-c/protobuf-c"
-    url = "https://github.com/protobuf-c/protobuf-c/releases/download/v1.3.1/protobuf-c-1.3.1.tar.gz"
+    url = "https://github.com/protobuf-c/protobuf-c/releases/download/v1.3.2/protobuf-c-1.3.2.tar.gz"
     git = "https://github.com/protobuf-c/protobuf-c.git"
 
     version('develop', branch='master')
 
     # Current
-    version('1.3.1', preferred=True, sha256='51472d3a191d6d7b425e32b612e477c06f73fe23e07f6a6a839b11808e9d2267')
+    version('1.3.2', sha256='53f251f14c597bdb087aecf0b63630f434d73f5a10fc1ac545073597535b9e74')
+    version('1.3.1', sha256='51472d3a191d6d7b425e32b612e477c06f73fe23e07f6a6a839b11808e9d2267')
 
     # Previous versions
     # TODO
@@ -33,7 +34,7 @@ class ProtobufC(AutotoolsPackage):
     depends_on('libtool',  type='build', when='@develop')
     depends_on('m4', type='build', when='@develop')
     depends_on('pkg-config', type='build')
-    depends_on('protobuf')
+    depends_on('protobuf@3.6.1', when='@:1.3.1')
 
     def configure_args(self):
         spec = self.spec
