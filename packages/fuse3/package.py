@@ -22,7 +22,12 @@ class Fuse3(MesonPackage):
     version('develop', branch='master')
 
     # Current
-    version('3.4.1', sha256='88302a8fa56e7871066652495b05faf14b36dca9f1b740e9fb00da0785e60485', preferred=True)
+    version('3.6.2', sha256='f45869427575e1e59ab743a67deb57addbf2cb8f9ce431199dbd40ddab71f281')
+    version('3.6.1', sha256='6dc3b702f2d13187ff4adb8bcbdcb913ca0510ce0020e4d87bdeb4d794173704')
+    version('3.6.0', sha256='0eeccc64698c16c9bf7875588112a55a667293915f5d314108e773b3b63e4a01')
+    version('3.5.0', sha256='75bfee6b730145483d18238b50daccde4c1b8133fa1703367fbf8088d0666bf0')
+    version('3.4.2', sha256='224dd4a598e23e114395a9717bc79638ab2b1e42c82ae8210aed9365aff325a3')
+    version('3.4.1', sha256='88302a8fa56e7871066652495b05faf14b36dca9f1b740e9fb00da0785e60485')
 
     # Previous versions
     # TODO
