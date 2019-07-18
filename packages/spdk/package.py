@@ -20,12 +20,18 @@ class Spdk(AutotoolsPackage):
     git      = "https://github.com/spdk/spdk"
 
     version('develop', branch='master', submodules=True)
-    version('19.01', tag='v19.01', submodules=True)
-    version('18.10.1', tag='v18.10.1', submodules=True)
-    version('18.07.1', tag='v18.07.1', submodules=True, preferred=True)
-    version('18.07', tag='v18.07', submodules=True)
+    version('19.04.1', tag='v19.04.1',  submodules=True)
+    version('19.04',   tag='v19.04',    submodules=True)
+    version('19.01.1', tag='v19.01.1',  submodules=True)
+    version('19.01',   tag='v19.01',    submodules=True)
+    version('18.10.2', tag='v18.10.2',  submodules=True)
+    version('18.10.1', tag='v18.10.1',  submodules=True)
+    version('18.10',   tag='v18.10',    submodules=True)
+    version('18.07.1', tag='v18.07.1',  submodules=True)
+    version('18.07',   tag='v18.07',    submodules=True)
 
     variant('fio', default=False, description='Build fio plugin')
+    variant('shared', default=False, description='Build shared libraries')
 
     depends_on('nasm@2.12.02:', type='build')
     depends_on('fio@3.3', when='+fio')
@@ -38,14 +44,16 @@ class Spdk(AutotoolsPackage):
     def configure_args(self):
         spec = self.spec
         config_args = [
-#            '--with-shared',
             '--disable-tests',
         ]
 
         if '+fio' in spec:
-	    config_args.extend([
-                '--with-fio={0}'.format(spec['fio'].prefix),
-            ])
+	    config_args.append(
+                '--with-fio={0}'.format(spec['fio'].prefix)
+            )
+
+        if '+shared' in spec:
+            config_args.append('--with-shared')
 
         return config_args
 
