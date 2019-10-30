@@ -19,7 +19,7 @@ class Spdk(AutotoolsPackage):
     url      = "https://github.com/spdk/spdk/archive/v19.01.tar.gz"
     git      = "https://github.com/spdk/spdk"
 
-    version('develop', branch='master', submodules=True)
+    version('master',  branch='master', submodules=True)
     version('19.04.1', tag='v19.04.1',  submodules=True)
     version('19.04',   tag='v19.04',    submodules=True)
     version('19.01.1', tag='v19.01.1',  submodules=True)
@@ -48,7 +48,7 @@ class Spdk(AutotoolsPackage):
         ]
 
         if '+fio' in spec:
-	    config_args.append(
+            config_args.append(
                 '--with-fio={0}'.format(spec['fio'].prefix)
             )
 
