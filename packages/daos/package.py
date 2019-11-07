@@ -54,6 +54,7 @@ class Daos(SConsPackage):
     depends_on('protobuf-c@1.3.1')
     depends_on('readline')
     depends_on('spdk@18.07.1+fio')
+    depends_on('libfabric', when='@master')
 
     depends_on('go', type='build')
 
@@ -80,5 +81,8 @@ class Daos(SConsPackage):
             'UUID_PREBUILT={0}'.format(spec['libuuid'].prefix),
             'YAML_PREBUILT={0}'.format(spec['libyaml'].prefix),
         ]
+
+        if self.spec.satisfies('@master'):
+            args.append('OFI_PREBUILT={0}'.format(spec['libfabric'].prefix))
 
         return args
