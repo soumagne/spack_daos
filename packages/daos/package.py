@@ -35,8 +35,6 @@ class Daos(SConsPackage):
 
     version('master', branch='master', submodules=True)
     version('0.6', tag='v0.6', preferred=True, submodules=True)
-    version('0.5', tag='v0.5', submodules=True)
-    version('0.4', tag='v0.4', submodules=True)
 
     variant('debug', default=False,
             description='Enable debugging info and strict compile warnings')
@@ -44,10 +42,8 @@ class Daos(SConsPackage):
     depends_on('argobots@develop')
     depends_on('cart@daos-devel', when='@master')
     depends_on('cart@daos-0.6',   when='@0.6')
-    depends_on('cart@daos-0.5',   when='@0.5')
-    depends_on('cart@daos-0.4',   when='@0.4')
     depends_on('cmocka', type='build')
-    depends_on('fuse3')
+    depends_on('fuse3@3.5.0')
     depends_on('hwloc@:1.999')
     depends_on('isa-l')
     depends_on('libuuid')
