@@ -57,7 +57,8 @@ class Daos(SConsPackage):
 
     depends_on('go', type='build')
 
-    patch('prereq.patch')
+    patch('prereq_master.patch', when='@master')
+    patch('prereq.patch', when='@0.6')
     patch('werror.patch')
 
     def build_args(self, spec, prefix):
