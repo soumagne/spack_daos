@@ -58,6 +58,7 @@ class Daos(SConsPackage):
     depends_on('go', type='build')
 
     patch('prereq_master.patch', when='@master')
+    patch('python3.patch', when='@master')
     patch('prereq.patch', when='@0.6')
     patch('werror.patch')
 
