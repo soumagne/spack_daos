@@ -47,6 +47,7 @@ class Cart(SConsPackage):
 
     patch('cart_include.patch')
     patch('werror.patch')
+    patch('leak.patch', when='@daos-devel')
 
     def build_args(self, spec, prefix):
         args = [
