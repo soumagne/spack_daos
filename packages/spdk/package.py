@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 from spack import *
-
+import os
 
 class Spdk(AutotoolsPackage):
     """The Storage Performance Development Kit (SPDK) provides a set of tools
@@ -61,6 +61,10 @@ class Spdk(AutotoolsPackage):
     def install_additional_files(self):
         spec = self.spec
         prefix = self.prefix
+
+        if spec.satisfies('@19.04:'):
+            for file in os.listdir(join_path(self.stage.source_path, 'dpdk', 'build', 'lib')):
+                install(join_path('dpdk', 'build', 'lib', file), prefix.lib)
 
         # Copy the config.h file, as some packages might require it
         mkdir(prefix.share)
