@@ -54,7 +54,8 @@ class Daos(SConsPackage):
     depends_on('pmdk@1.5.1', when='@0.6')
     depends_on('protobuf-c@1.3.1')
     depends_on('readline')
-    depends_on('spdk@18.07.1+fio')
+    depends_on('spdk@18.07.1+fio', when='@0.6')
+    depends_on('spdk@19.04.1+fio+shared', when='@master')
     depends_on('libfabric', when='@master')
 
     depends_on('go', type='build')
