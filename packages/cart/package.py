@@ -32,22 +32,26 @@ class Cart(SConsPackage):
     git      = 'https://github.com/daos-stack/cart.git'
 
     version('master', branch='master', submodules=True)
-    version('daos-devel', branch='daos_devel1', submodules=True)
+    version('daos-0.8', commit='4d03620dcb0304ab969d61b46b4263acc8b878c4', submodules=True)
+    version('daos-0.7', commit='d570c336237262d534ecc07c587e0eee7a778da2', submodules=True)
     version('daos-0.6', commit='7bde2eaec684faa02372caca464b96136348aad4', submodules=True)
 
-    depends_on('boost', type='build')
+    depends_on('boost',  type='build')
     depends_on('cmocka', type='build')
-    depends_on('mercury+boostsys')
-    depends_on('mercury@master+boostsys', when='@daos-devel')
-    depends_on('openmpi+pmix')
-    depends_on('pmix@2.1.1')
+    depends_on('mercury@master+boostsys')
+    depends_on('openmpi',      when='@master')
+    depends_on('openmpi+pmix', when='@:daos-0.8')
+    depends_on('pmix@2.1.1',   when='@:daos-0.8')
     depends_on('openssl')
     depends_on('libuuid')
     depends_on('libyaml')
 
     patch('cart_include.patch')
-    patch('werror.patch')
-    patch('leak.patch', when='@daos-devel')
+    patch('cart_werror_scons.patch')
+    patch('cart_werror_master.patch', when='@daos-0.8:')
+    patch('cart_werror_0_6.patch',    when='@:daos-0.7')
+    patch('cart_group_alloc.patch',   when='@daos-0.6')
+    patch('cart_na_error.patch',      when='@daos-0.6')
 
     def build_args(self, spec, prefix):
         args = [
@@ -57,8 +61,10 @@ class Cart(SConsPackage):
             'CRYPTO_PREBUILT={0}'.format(spec['openssl'].prefix),
             'MERCURY_PREBUILT={0}'.format(spec['mercury'].prefix),
             'OMPI_PREBUILT={0}'.format(spec['openmpi'].prefix),
-            'PMIX_PREBUILT={0}'.format(spec['pmix'].prefix),
             'UUID_PREBUILT={0}'.format(spec['libuuid'].prefix),
         ]
+
+        if self.spec.satisfies('@:daos-0.8'):
+            args.append('PMIX_PREBUILT={0}'.format(spec['pmix'].prefix))
 
         return args 

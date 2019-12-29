@@ -34,36 +34,41 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
-    version('0.6', tag='v0.6', preferred=True, submodules=True)
+    version('0.8', tag='v0.8.0', submodules=True)
+    version('0.7', tag='v0.7.0', preferred=True, submodules=True)
+    version('0.6', tag='v0.6', submodules=True)
 
     variant('debug', default=False,
             description='Enable debugging info and strict compile warnings')
 
-    depends_on('argobots@develop')
-    depends_on('cart@daos-devel', when='@master')
-    depends_on('cart@daos-0.6',   when='@0.6')
+    depends_on('argobots@1.0rc2:')
+    depends_on('cart@master',   when='@master')
+    depends_on('cart@daos-0.8', when='@0.8')
+    depends_on('cart@daos-0.7', when='@0.7')
+    depends_on('cart@daos-0.6', when='@0.6')
     depends_on('cmocka', type='build')
     depends_on('fuse3@3.5.0')
     depends_on('hwloc@:1.999')
     depends_on('isa-l')
     depends_on('libuuid')
     depends_on('libyaml')
-    depends_on('openmpi+pmix')
+    depends_on('openmpi', when='@master')
+    depends_on('openmpi+pmix', when='@:0.8')
     depends_on('openssl')
-    depends_on('pmdk@1.6', when='@master')
-    depends_on('pmdk@1.5.1', when='@0.6')
-    depends_on('protobuf-c@1.3.1')
+    depends_on('pmdk@:1.6.1')  # Hang with further versions
+    depends_on('protobuf-c')
     depends_on('readline')
     depends_on('spdk@18.07.1+fio', when='@0.6')
-    depends_on('spdk@19.04.1+fio+shared', when='@master')
-    depends_on('libfabric', when='@master')
+    depends_on('spdk@19.04.1+fio+shared', when='@0.7:')
+    depends_on('libfabric', when='@0.7:')
 
     depends_on('go', type='build')
 
-    patch('prereq_master.patch', when='@master')
-    patch('python3.patch', when='@master')
-    patch('prereq.patch', when='@0.6')
-    patch('werror.patch')
+    patch('daos_goreq_master.patch', when='@0.8:')
+    patch('daos_goreq_0_7.patch',    when='@0.7')
+    patch('daos_goreq_0_6.patch',    when='@0.6')
+    patch('daos_werror_scons.patch')
+    patch('daos_disable_python.patch', when='@0.7:')
 
     def build_args(self, spec, prefix):
         args = [
@@ -84,7 +89,7 @@ class Daos(SConsPackage):
             'YAML_PREBUILT={0}'.format(spec['libyaml'].prefix),
         ]
 
-        if self.spec.satisfies('@master'):
+        if self.spec.satisfies('@0.7:'):
             args.append('OFI_PREBUILT={0}'.format(spec['libfabric'].prefix))
 
         return args
