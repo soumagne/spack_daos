@@ -18,7 +18,7 @@ class Hdf5Daos(CMakePackage):
 
     depends_on('cmake@2.8.12.2:', type='build')
     depends_on('daos')
-    depends_on('hdf5@daos-develop+mpi')
+    depends_on('hdf5@1.12.0:+mpi+map')
 
     def cmake_args(self):
         """Populate cmake arguments for HDF5 DAOS."""
