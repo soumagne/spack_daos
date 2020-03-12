@@ -32,6 +32,7 @@ class Cart(SConsPackage):
     git      = 'https://github.com/daos-stack/cart.git'
 
     version('master', branch='master', submodules=True)
+    version('daos-0.9', commit='63fa727c055c2446f4f6f2d06d3aec8e84071c2b', submodules=True)
     version('daos-0.8', commit='4d03620dcb0304ab969d61b46b4263acc8b878c4', submodules=True)
     version('daos-0.7', commit='d570c336237262d534ecc07c587e0eee7a778da2', submodules=True)
     version('daos-0.6', commit='7bde2eaec684faa02372caca464b96136348aad4', submodules=True)
@@ -39,9 +40,8 @@ class Cart(SConsPackage):
     depends_on('boost',  type='build')
     depends_on('cmocka', type='build')
     depends_on('mercury@master+boostsys')
-    depends_on('openmpi',      when='@master')
     depends_on('openmpi+pmix', when='@:daos-0.8')
-    depends_on('pmix@2.1.1',   when='@:daos-0.8')
+    depends_on('pmix',   when='@:daos-0.8')
     depends_on('openssl')
     depends_on('libuuid')
     depends_on('libyaml')
@@ -52,6 +52,7 @@ class Cart(SConsPackage):
     patch('cart_werror_0_6.patch',    when='@:daos-0.7')
     patch('cart_group_alloc.patch',   when='@daos-0.6')
     patch('cart_na_error.patch',      when='@daos-0.6')
+    patch('cart_hg_0_9.patch',        when='@:daos-0.9')
 
     def build_args(self, spec, prefix):
         args = [
@@ -60,11 +61,11 @@ class Cart(SConsPackage):
             'CMOCKA_PREBUILT={0}'.format(spec['cmocka'].prefix),
             'CRYPTO_PREBUILT={0}'.format(spec['openssl'].prefix),
             'MERCURY_PREBUILT={0}'.format(spec['mercury'].prefix),
-            'OMPI_PREBUILT={0}'.format(spec['openmpi'].prefix),
             'UUID_PREBUILT={0}'.format(spec['libuuid'].prefix),
         ]
 
         if self.spec.satisfies('@:daos-0.8'):
+            args.append('OMPI_PREBUILT={0}'.format(spec['openmpi'].prefix))
             args.append('PMIX_PREBUILT={0}'.format(spec['pmix'].prefix))
 
         return args 
