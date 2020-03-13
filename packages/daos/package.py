@@ -65,7 +65,6 @@ class Daos(SConsPackage):
 
     depends_on('go', type='build')
 
-    patch('daos_goreq_master.patch', when='@master')
     patch('daos_goreq_0_8.patch', when='@0.8.0:0.9.0')
     patch('daos_goreq_0_7.patch', when='@0.7.0')
     patch('daos_goreq_0_6.patch', when='@0.6.0')
@@ -80,7 +79,6 @@ class Daos(SConsPackage):
             'CMOCKA_PREBUILT={0}'.format(spec['cmocka'].prefix),
             'CRYPTO_PREBUILT={0}'.format(spec['openssl'].prefix),
             'FUSE_PREBUILT={0}'.format(spec['fuse3'].prefix),
-            'GO_PREBUILT={0}'.format(spec['go'].prefix),
             'HWLOC_PREBUILT={0}'.format(spec['hwloc'].prefix),
             'ISAL_PREBUILT={0}'.format(spec['isa-l'].prefix),
             'PMDK_PREBUILT={0}'.format(spec['pmdk'].prefix),
@@ -89,6 +87,12 @@ class Daos(SConsPackage):
             'UUID_PREBUILT={0}'.format(spec['libuuid'].prefix),
             'YAML_PREBUILT={0}'.format(spec['libyaml'].prefix),
         ]
+
+        if self.spec.satisfies('@:0.9.0'):
+            args.append('GO_PREBUILT={0}'.format(spec['go'].prefix))
+
+        if self.spec.satisfies('@master'):
+            args.append('GO_BIN={0}'.format(spec['go'].prefix.bin) + "/go")
 
         if self.spec.satisfies('@:0.8.0'):
             args.append('OMPI_PREBUILT={0}'.format(spec['openmpi'].prefix))
