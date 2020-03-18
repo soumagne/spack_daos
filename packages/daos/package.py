@@ -70,6 +70,8 @@ class Daos(SConsPackage):
     patch('daos_goreq_0_6.patch', when='@0.6.0')
     patch('daos_werror_scons.patch')
     patch('daos_disable_python.patch', when='@0.7.0:')
+    patch('daos_admin.patch', when='@0.9.0')
+    patch('daos_admin_master.patch', when='@master')
 
     def build_args(self, spec, prefix):
         args = [
