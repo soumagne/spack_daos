@@ -17,7 +17,7 @@ need to check out the branch named `topic_daos` from this fork of spack:
 git clone git@github.com:soumagne/spack.git -b topic_daos
 ```
 
-Once you do that you must add spack to your environment, see [https://spack.readthedocs.io/en/latest/getting_started.html#add-spack-to-the-shell]. For instance for BASH
+Once you do that you must add spack to your environment, see this [page](https://spack.readthedocs.io/en/latest/getting_started.html#add-spack-to-the-shell). For instance for BASH
 add to your .bashrc:
 
 ```
@@ -28,12 +28,12 @@ if [ -f $SPACK_ROOT/share/spack/setup-env.sh ]; then
 fi
 ```
 
-The next step is to setup compilers, see: [https://spack.readthedocs.io/en/latest/getting_started.html#compiler-configuration].
+The next step is to setup compilers, see this [page](https://spack.readthedocs.io/en/latest/getting_started.html#compiler-configuration).
 
-Finally set up modules, see: [https://spack.readthedocs.io/en/latest/getting_started.html#environment-modules]. Before running the `spack bootstrap`
+Finally set up modules, see this [page](https://spack.readthedocs.io/en/latest/getting_started.html#environment-modules). Before running the `spack bootstrap`
 command, it is advisable to verify which module environment your system is using.
 You can specify that in your spack system package file
-`~/.spack/<arch>/packages.yaml` (see [https://spack.readthedocs.io/en/latest/getting_started.html#system-packages]). For example:
+`~/.spack/<arch>/packages.yaml` (see also this [page](https://spack.readthedocs.io/en/latest/getting_started.html#system-packages)). For example:
 
 ```
 packages:
