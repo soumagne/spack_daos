@@ -20,6 +20,7 @@ class Spdk(AutotoolsPackage):
     git      = "https://github.com/spdk/spdk"
 
     version('master',  branch='master', submodules=True)
+    version('20.01.1', tag='v20.01.1',  submodules=True)
     version('19.04.1', tag='v19.04.1',  submodules=True)
     version('19.04',   tag='v19.04',    submodules=True)
     version('19.01.1', tag='v19.01.1',  submodules=True)
@@ -30,16 +31,44 @@ class Spdk(AutotoolsPackage):
     version('18.07.1', tag='v18.07.1',  submodules=True)
     version('18.07',   tag='v18.07',    submodules=True)
 
+    variant('igb-uio-driver', default=False, description='Build DPDK igb-uio driver')
+    variant('crypto', default=False, description='Build vbdev crypto module')
     variant('fio', default=False, description='Build fio plugin')
-    variant('shared', default=False, description='Build shared libraries')
+    variant('vhost', default=False, description='Build vhost target')
+    variant('virtio', default=False, description='Build vhost initiator and virtio-pci bdev modules')
+    variant('pmdk', default=False, description='Build persistent memory bdev')
+    variant('reduce', default=False, description='Build vbdev compression module')
+    variant('vpp', default=False, description='Build VPP net module')
+    variant('rbd', default=False, description='Build Ceph RBD bdev module')
+    variant('rdma', default=False, description='Build RDMA transport for NVMf target and initiator')
+    variant('shared', default=False, description='Build spdk shared libraries')
+    variant('iscsi-initiator', default=False, description='Build with iscsi bdev module')
+    variant('vtune', default=False, description='Required to profile I/O under Intel VTune Amplifier XE')
+    variant('ocf', default=False, description='Build OCF library and bdev module')
+    variant('isal', default=False, description='Build with ISA-L')
+    variant('uring', default=False, description='Build I/O uring bdev')
+
+    mods = ('igb-uio-driver',
+            'crypto',
+            'vhost',
+            'virtio',
+            'pmdk',
+            'reduce',
+            'vpp',
+            'rbd',
+            'rdma',
+            'shared',
+            'iscsi-initiator',
+            'vtune',
+            'ocf',
+            'isal',
+            'uring',
+           )
 
     depends_on('nasm@2.12.02:', type='build')
     depends_on('fio@3.3', when='+fio')
     depends_on('numactl')
     depends_on('libaio')
-
-    #patch('spdk_shared.patch')
-    #patch('spdk_shared_dpdk.patch')
 
     def configure_args(self):
         spec = self.spec
@@ -52,8 +81,11 @@ class Spdk(AutotoolsPackage):
                 '--with-fio={0}'.format(spec['fio'].prefix)
             )
 
-        if '+shared' in spec:
-            config_args.append('--with-shared')
+        for mod in self.mods:
+            if '+' + mod in spec:
+                config_args.append('--with-{0}'.format(mod))
+            else:
+                config_args.append('--without-{0}'.format(mod))
 
         return config_args
 
