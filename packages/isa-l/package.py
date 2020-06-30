@@ -21,9 +21,9 @@ class IsaL(AutotoolsPackage):
        - De-compression - Fast inflate-compatible data compression.
     """
 
-    homepage = "https://github.com/01org/isa-l"
-    url = "https://github.com/01org/isa-l/archive/v2.25.0.tar.gz"
-    git = "https://github.com/01org/isa-l.git"
+    homepage = "https://github.com/intel/isa-l"
+    url = "https://github.com/intel/isa-l/archive/v2.25.0.tar.gz"
+    git = "https://github.com/intel/isa-l.git"
 
     version('master', branch='master')
 
