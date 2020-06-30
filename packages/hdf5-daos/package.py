@@ -15,10 +15,13 @@ class Hdf5Daos(CMakePackage):
     maintainers = ['soumagne']
 
     version('master', branch='master', submodules=True)
+    version('v1.0.x', branch='v1.0.x', submodules=True)
 
     depends_on('cmake@2.8.12.2:', type='build')
     depends_on('daos')
-    depends_on('hdf5@1.12.0:+mpi+map')
+    depends_on('hdf5@1.12.0:+hl+mpi+map')
+
+    patch('daos_vol_constant.patch')
 
     def cmake_args(self):
         """Populate cmake arguments for HDF5 DAOS."""

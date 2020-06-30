@@ -1,0 +1,14 @@
+diff --git a/src/daos_vol.c b/src/daos_vol.c
+index 6e36c16..4cf6df6 100644
+--- a/src/daos_vol.c
++++ b/src/daos_vol.c
+@@ -206,7 +206,7 @@ size_t daos_vol_curr_alloc_bytes;
+ #endif
+
+ /* Pool handle for use with all files */
+-daos_handle_t H5_daos_poh_g = DAOS_HDL_INVAL;
++daos_handle_t H5_daos_poh_g = {0};
+
+ /* Global variables used to open the pool */
+ MPI_Comm H5_daos_pool_comm_g = MPI_COMM_NULL;       /* Pool communicator */
+
