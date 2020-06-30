@@ -34,6 +34,7 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
+    version('1.0.0', tag='v1.0.0', submodules=True)
     version('0.9.0', tag='v0.9.0', submodules=True)
     version('0.8.0', tag='v0.8.0', submodules=True)
     version('0.7.0', tag='v0.7.0', submodules=True)
@@ -42,16 +43,19 @@ class Daos(SConsPackage):
     variant('debug', default=False,
             description='Enable debugging info and strict compile warnings')
 
-    depends_on('argobots@1.0rc2:')
-    depends_on('cart@master',   when='@master')
+    depends_on('argobots')
+    depends_on('mercury+boostsys', when='@master')
+    depends_on('boost', type='build', when='@master')
+    depends_on('cart@daos-1.0', when='@1.0.0')
     depends_on('cart@daos-0.9', when='@0.9.0')
     depends_on('cart@daos-0.8', when='@0.8.0')
     depends_on('cart@daos-0.7', when='@0.7.0')
     depends_on('cart@daos-0.6', when='@0.6.0')
     depends_on('cmocka', type='build')
-    depends_on('fuse3@3.5.0:')
-    depends_on('hwloc@:1.999')
+    depends_on('fuse3@3.6.1')
+    depends_on('hwloc@:1.999')    
     depends_on('isa-l')
+    depends_on('isa-l_crypto', when='@master')
     depends_on('libuuid')
     depends_on('libyaml')
     depends_on('openmpi+pmix', when='@:0.8.0')
@@ -60,27 +64,43 @@ class Daos(SConsPackage):
     depends_on('protobuf-c')
     depends_on('readline')
     depends_on('spdk@18.07.1+fio', when='@0.6.0')
-    depends_on('spdk@19.04.1+fio+shared', when='@0.7.0:')
+    depends_on('spdk@19.04.1+shared', when='@0.7.0:1.0.0')
+    depends_on('spdk@20.01.1+shared+rdma', when='@master')
     depends_on('libfabric', when='@0.7.0:')
 
     depends_on('go', type='build')
 
+    patch('daos_goreq_1_0.patch', when='@1.0.0')
     patch('daos_goreq_0_8.patch', when='@0.8.0:0.9.0')
     patch('daos_goreq_0_7.patch', when='@0.7.0')
     patch('daos_goreq_0_6.patch', when='@0.6.0')
-    patch('daos_werror_scons.patch')
+    patch('daos_werror_scons.patch', when='@:0.9.0')
     patch('daos_disable_python.patch', when='@0.7.0:')
-    patch('daos_admin.patch', when='@0.9.0')
-    patch('daos_admin_master.patch', when='@master')
+    patch('daos_admin_0_9.patch', when='@0.9.0')
+    patch('daos_admin_1_0.patch', when='@1.0.0')
+    patch('daos_load_mpi.patch', when='@0.9.0:1.0.0')
+    patch('daos_dfs.patch', when='@0.9.0:1.0.0')
+    patch('daos_extern.patch', when='@0.9.0:1.0.0')
+    patch('2996.patch', when='@master')
+    patch('daos_extern2.patch', when='@master')
+    patch('daos_allow_fwd.patch', when='@master')
 
     def build_args(self, spec, prefix):
         args = [
             'PREFIX={0}'.format(prefix),
+        ]
+
+        if self.spec.satisfies('@1.0.0'):
+            args.append('--warning-level=warning')
+
+        if self.spec.satisfies('@:1.0.0'):
+            args.extend([
             'ARGOBOTS_PREBUILT={0}'.format(spec['argobots'].prefix),
             'CART_PREBUILT={0}'.format(spec['cart'].prefix),
             'CMOCKA_PREBUILT={0}'.format(spec['cmocka'].prefix),
             'CRYPTO_PREBUILT={0}'.format(spec['openssl'].prefix),
             'FUSE_PREBUILT={0}'.format(spec['fuse3'].prefix),
+            'GO_PREBUILT={0}'.format(spec['go'].prefix),
             'HWLOC_PREBUILT={0}'.format(spec['hwloc'].prefix),
             'ISAL_PREBUILT={0}'.format(spec['isa-l'].prefix),
             'PMDK_PREBUILT={0}'.format(spec['pmdk'].prefix),
@@ -88,18 +108,49 @@ class Daos(SConsPackage):
             'SPDK_PREBUILT={0}'.format(spec['spdk'].prefix),
             'UUID_PREBUILT={0}'.format(spec['libuuid'].prefix),
             'YAML_PREBUILT={0}'.format(spec['libyaml'].prefix),
-        ]
-
-        if self.spec.satisfies('@:0.9.0'):
-            args.append('GO_PREBUILT={0}'.format(spec['go'].prefix))
+            ])
 
         if self.spec.satisfies('@master'):
-            args.append('GO_BIN={0}'.format(spec['go'].prefix.bin) + "/go")
+            args.extend([
+                'WARNING_LEVEL=warning',
+                'USE_INSTALLED=argobots,boost,cmocka,crypto,fuse,hwloc,isal,isal_crypto,mercury,ofi,pmdk,protobufc,spdk,uuid,yaml',
+                'ALT_PREFIX=%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s' % (
+                    format(spec['argobots'].prefix),
+                    format(spec['boost'].prefix),
+                    format(spec['cmocka'].prefix),
+                    format(spec['openssl'].prefix),
+                    format(spec['fuse3'].prefix),
+                    format(spec['hwloc'].prefix),
+                    format(spec['isa-l'].prefix),
+                    format(spec['isa-l_crypto'].prefix),
+                    format(spec['mercury'].prefix),
+                    format(spec['libfabric'].prefix),
+                    format(spec['pmdk'].prefix),
+                    format(spec['protobuf-c'].prefix),
+                    format(spec['spdk'].prefix),
+                    format(spec['libuuid'].prefix),
+                    format(spec['libyaml'].prefix)),
+                'GO_BIN={0}'.format(spec['go'].prefix.bin) + "/go"
+            ])
 
         if self.spec.satisfies('@:0.8.0'):
             args.append('OMPI_PREBUILT={0}'.format(spec['openmpi'].prefix))
 
-        if self.spec.satisfies('@0.7.0:'):
+        if self.spec.satisfies('@0.7.0:1.0.0'):
             args.append('OFI_PREBUILT={0}'.format(spec['libfabric'].prefix))
 
         return args
+
+    def install_args(self, spec, prefix):
+        args = [
+            'PREFIX={0}'.format(prefix),
+        ]
+
+        if self.spec.satisfies('@1.0.0'):
+            args.append('--warning-level=warning')
+
+        if self.spec.satisfies('@1.0.0'):
+            args.append('WARNING_LEVEL=warning')
+
+        return args
+

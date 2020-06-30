@@ -1,0 +1,56 @@
+diff --git a/src/control/pbin/forwarding.go b/src/control/pbin/forwarding.go
+index 34f4f9bfb6..63c83592b8 100644
+--- a/src/control/pbin/forwarding.go
++++ b/src/control/pbin/forwarding.go
+@@ -25,6 +25,8 @@ package pbin
+ import (
+ 	"context"
+ 	"encoding/json"
++	"os"
++	"strconv"
+ 
+ 	"github.com/pkg/errors"
+ 
+@@ -68,6 +70,16 @@ func NewForwarder(log logging.Logger, pbinName string) *Forwarder {
+ 		pbinName: pbinName,
+ 	}
+ 
++	if val, set := os.LookupEnv(DisableReqFwdEnvVar); set {
++		disabled, err := strconv.ParseBool(val)
++		if err != nil {
++			log.Errorf("%s was set to non-boolean value (%q); not disabling",
++				DisableReqFwdEnvVar, val)
++			return fwd
++		}
++		fwd.Disabled = disabled
++	}
++
+ 	return fwd
+ }
+ 
+diff --git a/src/control/pbin/pbin.go b/src/control/pbin/pbin.go
+index b9690b1b72..81259c28c6 100644
+--- a/src/control/pbin/pbin.go
++++ b/src/control/pbin/pbin.go
+@@ -36,6 +36,10 @@ const (
+ 	// DaosAdminName is the name of the daos_admin privileged helper.
+ 	DaosAdminName = "daos_admin"
+ 
++	// DisableReqFwdEnvVar is the name of the environment variable which
++	// can be set to disable forwarding requests to the privileged binary.
++	DisableReqFwdEnvVar = "DAOS_DISABLE_REQ_FWD"
++
+ 	// DaosAdminLogFileEnvVar is the name of the environment variable which
+ 	// can be set to enable non-ERROR logging in the privileged binary.
+ 	DaosAdminLogFileEnvVar = "DAOS_ADMIN_LOG_FILE"
+@@ -53,6 +57,10 @@ func CheckHelper(log logging.Logger, helperName string) error {
+ 	dummy := struct{}{}
+ 	pingRes := PingResp{}
+ 
++	if fwd.Disabled {
++		return nil
++	}
++
+ 	if err := fwd.SendReq("Ping", dummy, &pingRes); err != nil {
+ 		err = errors.Cause(err)
+ 		switch {
