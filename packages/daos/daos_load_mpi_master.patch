@@ -1,0 +1,41 @@
+diff --git a/SConstruct b/SConstruct
+index ba2469d1e..111b07a02 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -368,8 +368,8 @@ def scons(): # pylint: disable=too-many-locals
+         commits_file = None
+ 
+     prereqs = PreReqComponent(env, opts, commits_file)
+-    if not GetOption('help') and not GetOption('clean'):
+-        daos_build.load_mpi_path(env)
++    #if not GetOption('help') and not GetOption('clean'):
++    #    daos_build.load_mpi_path(env)
+     preload_prereqs(prereqs)
+     if prereqs.check_component('valgrind_devel'):
+         env.AppendUnique(CPPDEFINES=["DAOS_HAS_VALGRIND"])
+diff --git a/src/rdb/tests/rdb_test_runner.py b/src/rdb/tests/rdb_test_runner.py
+index c43f07451..a9ff435d1 100755
+--- a/src/rdb/tests/rdb_test_runner.py
++++ b/src/rdb/tests/rdb_test_runner.py
+@@ -238,7 +238,7 @@ if __name__ == "__main__":
+     binfo = BuildInfo(os.path.join(build_root, ".build_vars.json"));
+     debug_cmds = "-x D_LOG_MASK=DEBUG,RPC=ERR,MEM=ERR " + \
+                  "-x DD_SUBSYS=all -x DD_MASK=all"
+-    load_mpi('openmpi')
++    #load_mpi('openmpi')
+     orterun = find_executable('orterun')
+     if orterun is None:
+         raise ServerFailedToStart("No orterun installed")
+diff --git a/utils/daos_build.py b/utils/daos_build.py
+index c0065b462..31bbec4a3 100644
+--- a/utils/daos_build.py
++++ b/utils/daos_build.py
+@@ -143,7 +143,7 @@ def configure_mpi(env, libs, required=None):
+             mpis = required
+ 
+     for mpi in mpis:
+-        load_mpi(mpi)
++        #load_mpi(mpi)
+         comp = mpi
+         if mpi == "openmpi":
+             comp = "ompi"

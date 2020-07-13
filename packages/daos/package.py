@@ -52,7 +52,7 @@ class Daos(SConsPackage):
     depends_on('cart@daos-0.7', when='@0.7.0')
     depends_on('cart@daos-0.6', when='@0.6.0')
     depends_on('cmocka', type='build')
-    depends_on('fuse3@3.6.1')
+    depends_on('fuse3@3.6.1:')
     depends_on('hwloc@:1.999')    
     depends_on('isa-l')
     depends_on('isa-l_crypto', when='@master')
@@ -81,9 +81,8 @@ class Daos(SConsPackage):
     patch('daos_load_mpi.patch', when='@0.9.0:1.0.0')
     patch('daos_dfs.patch', when='@0.9.0:1.0.0')
     patch('daos_extern.patch', when='@0.9.0:1.0.0')
-    patch('2996.patch', when='@master')
-    patch('daos_extern2.patch', when='@master')
     patch('daos_allow_fwd.patch', when='@master')
+    patch('daos_load_mpi_master.patch', when='@master')
 
     def build_args(self, spec, prefix):
         args = [
