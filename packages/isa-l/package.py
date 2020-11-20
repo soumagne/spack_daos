@@ -28,6 +28,7 @@ class IsaL(AutotoolsPackage):
     version('master', branch='master')
 
     # Current
+    version('2.30.0', sha256='bcf592c04fdfa19e723d2adf53d3e0f4efd5b956bb618fed54a1108d76a6eb56')
     version('2.29.0', sha256='832d9747ef3f0c8c05d39e3d7fd6ee5299a844e1ee7382fc8c8b52a268f36eda')
     version('2.28.0', sha256='589202efdcfe437b1786750ec81bf93055e3b88a4bdf909d3b519f2a7134034b')
     version('2.27.0', sha256='d398c5072e8e73bebf02ad4f1db3c13e27a7d96c8c1630e75a19c9bd79a92964')
