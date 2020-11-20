@@ -1,20 +1,18 @@
 diff --git a/SConstruct b/SConstruct
-index ba2469d1e..111b07a02 100644
+index 6bd806830..55f02aec9 100644
 --- a/SConstruct
 +++ b/SConstruct
-@@ -368,8 +368,8 @@ def scons(): # pylint: disable=too-many-locals
+@@ -332,7 +332,7 @@ def scons():
          commits_file = None
  
      prereqs = PreReqComponent(env, opts, commits_file)
--    if not GetOption('help') and not GetOption('clean'):
--        daos_build.load_mpi_path(env)
-+    #if not GetOption('help') and not GetOption('clean'):
-+    #    daos_build.load_mpi_path(env)
+-    daos_build.load_mpi_path(env)
++#    daos_build.load_mpi_path(env)
      preload_prereqs(prereqs)
      if prereqs.check_component('valgrind_devel'):
          env.AppendUnique(CPPDEFINES=["DAOS_HAS_VALGRIND"])
 diff --git a/src/rdb/tests/rdb_test_runner.py b/src/rdb/tests/rdb_test_runner.py
-index c43f07451..a9ff435d1 100755
+index 7706e2eb8..cd18f235b 100755
 --- a/src/rdb/tests/rdb_test_runner.py
 +++ b/src/rdb/tests/rdb_test_runner.py
 @@ -238,7 +238,7 @@ if __name__ == "__main__":
@@ -27,10 +25,10 @@ index c43f07451..a9ff435d1 100755
      if orterun is None:
          raise ServerFailedToStart("No orterun installed")
 diff --git a/utils/daos_build.py b/utils/daos_build.py
-index c0065b462..31bbec4a3 100644
+index 37b9a2272..eae5d5925 100644
 --- a/utils/daos_build.py
 +++ b/utils/daos_build.py
-@@ -143,7 +143,7 @@ def configure_mpi(env, libs, required=None):
+@@ -70,7 +70,7 @@ def configure_mpi(prereqs, env, libs, required=None):
              mpis = required
  
      for mpi in mpis:

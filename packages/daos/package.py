@@ -34,6 +34,7 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
+    version('1.1.1', tag='v1.1.1', submodules=True)
     version('1.0.0', tag='v1.0.0', submodules=True)
     version('0.9.0', tag='v0.9.0', submodules=True)
     version('0.8.0', tag='v0.8.0', submodules=True)
@@ -44,8 +45,8 @@ class Daos(SConsPackage):
             description='Enable debugging info and strict compile warnings')
 
     depends_on('argobots')
-    depends_on('mercury+boostsys', when='@master')
-    depends_on('boost', type='build', when='@master')
+    depends_on('mercury+boostsys', when='@1.1.0:')
+    depends_on('boost', type='build', when='@1.1.0:')
     depends_on('cart@daos-1.0', when='@1.0.0')
     depends_on('cart@daos-0.9', when='@0.9.0')
     depends_on('cart@daos-0.8', when='@0.8.0')
@@ -56,7 +57,7 @@ class Daos(SConsPackage):
     depends_on('hwloc')
     depends_on('hwloc@:1.999', when='@:1.0.0')
     depends_on('isa-l')
-    depends_on('isa-l_crypto', when='@master')
+    depends_on('isa-l_crypto', when='@1.1.0:')
     depends_on('libuuid')
     depends_on('libyaml')
     depends_on('openmpi+pmix', when='@:0.8.0')
@@ -66,7 +67,7 @@ class Daos(SConsPackage):
     depends_on('readline')
     depends_on('spdk@18.07.1+fio', when='@0.6.0')
     depends_on('spdk@19.04.1+shared', when='@0.7.0:1.0.0')
-    depends_on('spdk@20.01.1+shared+rdma', when='@master')
+    depends_on('spdk@20.01.1+shared+rdma', when='@1.1.0:')
     depends_on('libfabric', when='@0.7.0:')
 
     depends_on('go', type='build')
@@ -77,14 +78,15 @@ class Daos(SConsPackage):
     patch('daos_goreq_0_6.patch', when='@0.6.0')
     patch('daos_werror_scons.patch', when='@:0.9.0')
     patch('daos_disable_python.patch', when='@0.7.0:1.0.0')
-    patch('daos_disable_python_master.patch', when='@master')
     patch('daos_admin_0_9.patch', when='@0.9.0')
     patch('daos_admin_1_0.patch', when='@1.0.0')
-    patch('daos_load_mpi.patch', when='@0.9.0:1.0.0')
+    patch('daos_load_mpi_0_9.patch', when='@0.9.0:1.0.0')
     patch('daos_dfs.patch', when='@0.9.0:1.0.0')
     patch('daos_extern.patch', when='@0.9.0:1.0.0')
+    patch('daos_allow_fwd_1_1_1.patch', when='@1.1.1')
+    patch('daos_load_mpi_1_1_1.patch', when='@1.1.1')    
     patch('daos_allow_fwd.patch', when='@master')
-    patch('daos_load_mpi_master.patch', when='@master')
+    patch('daos_load_mpi.patch', when='@master')
 
     def build_args(self, spec, prefix):
         args = [
@@ -111,7 +113,7 @@ class Daos(SConsPackage):
             'YAML_PREBUILT={0}'.format(spec['libyaml'].prefix),
             ])
 
-        if self.spec.satisfies('@master'):
+        if self.spec.satisfies('@1.1.0:'):
             args.extend([
                 'WARNING_LEVEL=warning',
                 'USE_INSTALLED=argobots,boost,cmocka,crypto,fuse,hwloc,isal,isal_crypto,mercury,ofi,pmdk,protobufc,spdk,uuid,yaml',
