@@ -34,6 +34,7 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
+    version('1.1.2', tag='v1.1.2', submodules=True)
     version('1.1.1', tag='v1.1.1', submodules=True)
     version('1.0.0', tag='v1.0.0', submodules=True)
     version('0.9.0', tag='v0.9.0', submodules=True)
@@ -41,6 +42,8 @@ class Daos(SConsPackage):
     version('0.7.0', tag='v0.7.0', submodules=True)
     version('0.6.0', tag='v0.6',   submodules=True)
 
+    variant('fwd', default=True,
+            description='Bypass root setup and privilege helper')
     variant('debug', default=False,
             description='Enable debugging info and strict compile warnings')
 
@@ -78,15 +81,15 @@ class Daos(SConsPackage):
     patch('daos_goreq_0_6.patch', when='@0.6.0')
     patch('daos_werror_scons.patch', when='@:0.9.0')
     patch('daos_disable_python.patch', when='@0.7.0:1.0.0')
-    patch('daos_admin_0_9.patch', when='@0.9.0')
-    patch('daos_admin_1_0.patch', when='@1.0.0')
+    patch('daos_admin_0_9.patch', when='@0.9.0+fwd')
+    patch('daos_admin_1_0.patch', when='@1.0.0+fwd')
     patch('daos_load_mpi_0_9.patch', when='@0.9.0:1.0.0')
     patch('daos_dfs.patch', when='@0.9.0:1.0.0')
     patch('daos_extern.patch', when='@0.9.0:1.0.0')
-    patch('daos_allow_fwd_1_1_1.patch', when='@1.1.1')
+    patch('daos_allow_fwd_1_1_1.patch', when='@1.1.1+fwd')
     patch('daos_load_mpi_1_1_1.patch', when='@1.1.1')    
-    patch('daos_allow_fwd.patch', when='@master')
-    patch('daos_load_mpi.patch', when='@master')
+    patch('daos_allow_fwd.patch', when='@1.1.2:+fwd')
+    patch('daos_load_mpi.patch', when='@1.1.2:')
 
     def build_args(self, spec, prefix):
         args = [
