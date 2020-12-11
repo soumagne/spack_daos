@@ -34,6 +34,7 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
+    version('1.1.2.1', tag='v1.1.2.1', submodules=True)
     version('1.1.2', tag='v1.1.2', submodules=True)
     version('1.1.1', tag='v1.1.1', submodules=True)
     version('1.0.0', tag='v1.0.0', submodules=True)
