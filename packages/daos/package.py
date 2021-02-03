@@ -118,25 +118,33 @@ class Daos(SConsPackage):
             ])
 
         if self.spec.satisfies('@1.1.0:'):
+            # Construct ALT_PREFIX and make sure '/usr' is last
+            alt_prefix = [
+                format(spec['pmdk'].prefix),
+                format(spec['argobots'].prefix),
+                format(spec['boost'].prefix),
+                format(spec['cmocka'].prefix),
+                format(spec['openssl'].prefix),
+                format(spec['fuse3'].prefix),
+                format(spec['hwloc'].prefix),
+                format(spec['isa-l'].prefix),
+                format(spec['isa-l_crypto'].prefix),
+                format(spec['mercury'].prefix),
+                format(spec['libfabric'].prefix),
+                format(spec['protobuf-c'].prefix),
+                format(spec['spdk'].prefix),
+                format(spec['libuuid'].prefix),
+                format(spec['libyaml'].prefix)
+            ]
+            alt_prefix_clean = []
+            for i in alt_prefix:
+                if i != "/usr":
+                    alt_prefix_clean.append(i)
+            alt_prefix_clean.append("/usr")
+
             args.extend([
                 'WARNING_LEVEL=warning',
-                'USE_INSTALLED=argobots,boost,cmocka,crypto,fuse,hwloc,isal,isal_crypto,mercury,ofi,pmdk,protobufc,spdk,uuid,yaml',
-                'ALT_PREFIX=%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s' % (
-                    format(spec['argobots'].prefix),
-                    format(spec['boost'].prefix),
-                    format(spec['cmocka'].prefix),
-                    format(spec['openssl'].prefix),
-                    format(spec['fuse3'].prefix),
-                    format(spec['hwloc'].prefix),
-                    format(spec['isa-l'].prefix),
-                    format(spec['isa-l_crypto'].prefix),
-                    format(spec['mercury'].prefix),
-                    format(spec['libfabric'].prefix),
-                    format(spec['pmdk'].prefix),
-                    format(spec['protobuf-c'].prefix),
-                    format(spec['spdk'].prefix),
-                    format(spec['libuuid'].prefix),
-                    format(spec['libyaml'].prefix)),
+                'ALT_PREFIX=%s' % ':'.join([str(elem) for elem in alt_prefix_clean]),
                 'GO_BIN={0}'.format(spec['go'].prefix.bin) + "/go"
             ])
 
