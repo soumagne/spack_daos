@@ -15,13 +15,12 @@ class Hdf5Daos(CMakePackage):
     maintainers = ['soumagne']
 
     version('master', branch='master', submodules=True)
-    version('v1.0.x', branch='v1.0.x', submodules=True)
+    version('v1.1.0rc2', tag='v1.1.0rc2', submodules=True)
+    version('v1.1.0rc1', tag='v1.1.0rc1', submodules=True)
 
     depends_on('cmake@2.8.12.2:', type='build')
-    depends_on('daos')
-    depends_on('hdf5@1.12.0:+hl+mpi+map')
-
-    patch('daos_vol_constant.patch')
+    depends_on('daos@1.1.0:')
+    depends_on('hdf5@1.13.0:+hl+mpi+map')
 
     def cmake_args(self):
         """Populate cmake arguments for HDF5 DAOS."""
@@ -35,6 +34,9 @@ class Hdf5Daos(CMakePackage):
         ]
 
         return cmake_args
+
+    def setup_run_environment(self, env):
+        env.prepend_path('HDF5_PLUGIN_PATH', self.prefix.lib)
 
     def check(self):
         """Unit tests fail when run in parallel."""
