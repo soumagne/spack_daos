@@ -34,6 +34,7 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
+    version('1.1.3', tag='v1.1.3', submodules=True)
     version('1.1.2.1', tag='v1.1.2.1', submodules=True)
     version('1.1.2', tag='v1.1.2', submodules=True)
     version('1.1.1', tag='v1.1.1', submodules=True)
@@ -89,8 +90,9 @@ class Daos(SConsPackage):
     patch('daos_extern.patch', when='@0.9.0:1.0.0')
     patch('daos_allow_fwd_1_1_1.patch', when='@1.1.1+fwd')
     patch('daos_load_mpi_1_1_1.patch', when='@1.1.1')    
+    patch('daos_load_mpi_1_1_2.patch', when='@1.1.2')
     patch('daos_allow_fwd.patch', when='@1.1.2:+fwd')
-    patch('daos_load_mpi.patch', when='@1.1.2:')
+    patch('daos_load_mpi_1_1_3.patch', when='@1.1.3:')
 
     def build_args(self, spec, prefix):
         args = [
