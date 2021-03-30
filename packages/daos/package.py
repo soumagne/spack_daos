@@ -34,6 +34,7 @@ class Daos(SConsPackage):
     git      = 'https://github.com/daos-stack/daos.git'
 
     version('master', branch='master', submodules=True)
+    version('1.1.4', tag='v1.1.4', submodules=True)
     version('1.1.3', tag='v1.1.3', submodules=True)
     version('1.1.2.1', tag='v1.1.2.1', submodules=True)
     version('1.1.2', tag='v1.1.2', submodules=True)
@@ -72,7 +73,7 @@ class Daos(SConsPackage):
     depends_on('readline')
     depends_on('spdk@18.07.1+fio', when='@0.6.0')
     depends_on('spdk@19.04.1+shared', when='@0.7.0:1.0.0')
-    depends_on('spdk@20.01.1+shared+rdma', when='@1.1.0:')
+    depends_on('spdk@20.01.1:+shared+rdma', when='@1.1.0:')
     depends_on('libfabric', when='@0.7.0:')
 
     depends_on('go', type='build')
