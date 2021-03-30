@@ -20,6 +20,7 @@ class Spdk(AutotoolsPackage):
     git      = "https://github.com/spdk/spdk"
 
     version('master',  branch='master', submodules=True)
+    version('20.01.2', tag='v20.01.2',  submodules=True)
     version('20.01.1', tag='v20.01.1',  submodules=True)
     version('19.04.1', tag='v19.04.1',  submodules=True)
     version('19.04',   tag='v19.04',    submodules=True)
