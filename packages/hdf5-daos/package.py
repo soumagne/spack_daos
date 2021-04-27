@@ -10,11 +10,12 @@ class Hdf5Daos(CMakePackage):
 
     homepage = ''
     url = ''
-    git = 'https://git.hdfgroup.org/scm/hdf5vol/daos-vol.git'
+    git = 'https://github.com/HDFGroup/vol-daos.git'
 
     maintainers = ['soumagne']
 
     version('master', branch='master', submodules=True)
+    version('v1.1.0rc3', tag='v1.1.0rc3', submodules=True)
     version('v1.1.0rc2', tag='v1.1.0rc2', submodules=True)
     version('v1.1.0rc1', tag='v1.1.0rc1', submodules=True)
 
