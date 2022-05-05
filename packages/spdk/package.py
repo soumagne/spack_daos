@@ -20,6 +20,7 @@ class Spdk(AutotoolsPackage):
     git      = "https://github.com/spdk/spdk"
 
     version('master',  branch='master', submodules=True)
+    version('21.07',   tag='v21.07',    submodules=True)
     version('20.01.2', tag='v20.01.2',  submodules=True)
     version('20.01.1', tag='v20.01.1',  submodules=True)
     version('19.04.1', tag='v19.04.1',  submodules=True)
@@ -32,14 +33,12 @@ class Spdk(AutotoolsPackage):
     version('18.07.1', tag='v18.07.1',  submodules=True)
     version('18.07',   tag='v18.07',    submodules=True)
 
-    variant('igb-uio-driver', default=False, description='Build DPDK igb-uio driver')
     variant('crypto', default=False, description='Build vbdev crypto module')
     variant('fio', default=False, description='Build fio plugin')
     variant('vhost', default=False, description='Build vhost target')
     variant('virtio', default=False, description='Build vhost initiator and virtio-pci bdev modules')
     variant('pmdk', default=False, description='Build persistent memory bdev')
     variant('reduce', default=False, description='Build vbdev compression module')
-    variant('vpp', default=False, description='Build VPP net module')
     variant('rbd', default=False, description='Build Ceph RBD bdev module')
     variant('rdma', default=False, description='Build RDMA transport for NVMf target and initiator')
     variant('shared', default=False, description='Build spdk shared libraries')
@@ -49,13 +48,11 @@ class Spdk(AutotoolsPackage):
     variant('isal', default=False, description='Build with ISA-L')
     variant('uring', default=False, description='Build I/O uring bdev')
 
-    mods = ('igb-uio-driver',
-            'crypto',
+    mods = ('crypto',
             'vhost',
             'virtio',
             'pmdk',
             'reduce',
-            'vpp',
             'rbd',
             'rdma',
             'shared',
@@ -77,6 +74,10 @@ class Spdk(AutotoolsPackage):
             '--disable-tests',
         ]
 
+        if spec.satisfies('@21.07:'):
+            config_args.append('--disable-unit-tests')
+            config_args.append('--disable-apps')
+
         if '+fio' in spec:
             config_args.append(
                 '--with-fio={0}'.format(spec['fio'].prefix)
@@ -95,9 +96,18 @@ class Spdk(AutotoolsPackage):
         spec = self.spec
         prefix = self.prefix
 
-        if spec.satisfies('@19.04:'):
+        if spec.satisfies('@19.04:20.01'):
             for file in os.listdir(join_path(self.stage.source_path, 'dpdk', 'build', 'lib')):
                 install(join_path('dpdk', 'build', 'lib', file), prefix.lib)
+
+        if spec.satisfies('@21.07:'):
+            dpdk_build_dir = join_path(self.stage.source_path, 'dpdk', 'build', 'lib')
+            install_tree(join_path(dpdk_build_dir, 'pkgconfig'), join_path(prefix.lib, 'pkgconfig'))
+            for file in os.listdir(dpdk_build_dir):
+                if os.path.isfile(join_path('dpdk', 'build', 'lib', file)):
+                    install(join_path('dpdk', 'build', 'lib', file), prefix.lib)
+            mkdir(join_path(prefix.include, 'dpdk'))
+            install_tree('dpdk/build/include', join_path(prefix.include, 'dpdk'))
 
         # Copy the config.h file, as some packages might require it
         mkdir(prefix.share)
