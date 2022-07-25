@@ -1,4 +1,4 @@
-From f28dc6c003b4969e110c96cd66a8585d2a7f4bd0 Mon Sep 17 00:00:00 2001
+From 3681eaa1876f35eaab091dc17d0cc8df0f4a9203 Mon Sep 17 00:00:00 2001
 From: Michael MacDonald <mjmac.macdonald@intel.com>
 Date: Thu, 20 Feb 2020 14:20:37 -0500
 Subject: [PATCH] HACK: Allow forwarding to be disabled
@@ -31,8 +31,8 @@ Signed-off-by: Dalton Bohning <daltonx.bohning@intel.com>
  src/control/server/server.go               | 14 +++++++-------
  src/control/server/server_utils.go         | 19 +------------------
  src/control/server/storage/provider.go     |  5 +++++
- src/control/server/storage/scm/provider.go |  5 +++++
- 8 files changed, 48 insertions(+), 37 deletions(-)
+ src/control/server/storage/scm/provider.go |  3 +++
+ 8 files changed, 46 insertions(+), 37 deletions(-)
 
 diff --git a/src/control/cmd/daos_server/main.go b/src/control/cmd/daos_server/main.go
 index 99bd3e11e..a4e2424d8 100644
@@ -228,17 +228,15 @@ index 90bf54231..aff889be0 100644
  	if err != nil {
  		return err
 diff --git a/src/control/server/storage/scm/provider.go b/src/control/server/storage/scm/provider.go
-index aaad8dc85..73ea36312 100644
+index aaad8dc85..01db55e61 100644
 --- a/src/control/server/storage/scm/provider.go
 +++ b/src/control/server/storage/scm/provider.go
-@@ -331,6 +331,11 @@ func (p *Provider) createScanResponse() *storage.ScmScanResponse {
+@@ -331,6 +331,9 @@ func (p *Provider) createScanResponse() *storage.ScmScanResponse {
  
  // Scan attempts to scan the system for SCM storage components.
  func (p *Provider) Scan(req storage.ScmScanRequest) (*storage.ScmScanResponse, error) {
 +	// Don't perform a SCM scan.
-+	return &storage.ScmScanResponse{
-+		State: storage.ScmStateNoModules,
-+	}, nil
++	return p.createScanResponse(), nil
 +
  	if p.isInitialized() && !req.Rescan {
  		return p.createScanResponse(), nil
