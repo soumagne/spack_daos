@@ -1,0 +1,42 @@
+commit 22e79be44fd5609b7f43236d8be9b68303e99e81
+Author: Michal Berger <michalx.berger@intel.com>
+Date:   Thu Oct 28 11:33:24 2021 +0200
+
+    buildtools: Handle thin archives created by meson >= 0.60.0
+    
+    Taken from:
+    https://mails.dpdk.org/archives/dev/2021-October/227579.html
+    
+    Signed-off-by: Michal Berger <michalx.berger@intel.com>
+    Change-Id: Iad7da77986c6d276115ecaa4239b0afa91f56a1c
+    Reviewed-on: https://review.spdk.io/gerrit/c/spdk/dpdk/+/10044
+    Tested-by: SPDK CI Jenkins <sys_sgci@intel.com>
+    Reviewed-by: Tomasz Zawadzki <tomasz.zawadzki@intel.com>
+    Reviewed-by: Jim Harris <james.r.harris@intel.com>
+
+diff --git a/buildtools/gen-pmdinfo-cfile.py b/buildtools/gen-pmdinfo-cfile.py
+index 58fe3ad152..5fbd51658a 100644
+--- a/dpdk/buildtools/gen-pmdinfo-cfile.py
++++ b/dpdk/buildtools/gen-pmdinfo-cfile.py
+@@ -9,12 +9,13 @@
+ 
+ _, tmp_root, ar, archive, output, *pmdinfogen = sys.argv
+ with tempfile.TemporaryDirectory(dir=tmp_root) as temp:
+-    run_ar = lambda command: subprocess.run(
+-        [ar, command, os.path.abspath(archive)],
+-        stdout=subprocess.PIPE, check=True, cwd=temp
+-    )
+-    # Don't use "ar p", because its output is corrupted on Windows.
+-    run_ar("x")
+-    names = run_ar("t").stdout.decode().splitlines()
+-    paths = [os.path.join(temp, name) for name in names]
++    paths = []
++    for name in subprocess.run([ar, "t", archive], stdout=subprocess.PIPE,
++                               check=True).stdout.decode().splitlines():
++        if os.path.exists(name):
++            paths.append(name)
++        else:
++            subprocess.run([ar, "x", os.path.abspath(archive), name],
++                           check=True, cwd=temp)
++            paths.append(os.path.join(temp, name))
+     subprocess.run(pmdinfogen + paths + [output], check=True)
