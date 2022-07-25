@@ -80,6 +80,7 @@ class Daos(SConsPackage):
     patch('daos_load_mpi_1_1_3.patch', when='@1.1.3:1.2.0')
     patch('daos_dpdk.patch', when='@2.0')
     patch('daos_allow_fwd_2_0_0.patch', when='@2.0+fwd')
+    patch('daos_allow_fwd_2_2_0.patch', when='@2.2+fwd')
 
     def build_args(self, spec, prefix):
         args = [

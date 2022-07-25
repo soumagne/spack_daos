@@ -1,0 +1,248 @@
+From f28dc6c003b4969e110c96cd66a8585d2a7f4bd0 Mon Sep 17 00:00:00 2001
+From: Michael MacDonald <mjmac.macdonald@intel.com>
+Date: Thu, 20 Feb 2020 14:20:37 -0500
+Subject: [PATCH] HACK: Allow forwarding to be disabled
+
+Apply this patch against master in order to remove a hard requirement
+on forwarding requests to daos_admin. As before,
+DAOS_DISABLE_REQ_FWD=true will disable forwarding to daos_admin.
+
+Please note that this is an unsupported configuration, and future work
+will likely remove all ability for daos_server to operate independently
+of daos_admin.
+
+HACK: Disable automatic NVMe prepare on startup
+
+Signed-off-by: Michael MacDonald <mjmac.macdonald@intel.com>
+
+HACK: Disable SCM/NVMe scanning
+
+Signed-off-by: Michael MacDonald <mjmac.macdonald@intel.com>
+Signed-off-by: Dalton Bohning <daltonx.bohning@intel.com>
+
+HACK: Don't check daos_admin
+
+Signed-off-by: Dalton Bohning <daltonx.bohning@intel.com>
+---
+ src/control/cmd/daos_server/main.go        |  5 ++---
+ src/control/pbin/app.go                    | 18 +++++++++---------
+ src/control/pbin/forwarding.go             | 11 +++++++++++
+ src/control/pbin/pbin.go                   |  8 ++++++++
+ src/control/server/server.go               | 14 +++++++-------
+ src/control/server/server_utils.go         | 19 +------------------
+ src/control/server/storage/provider.go     |  5 +++++
+ src/control/server/storage/scm/provider.go |  5 +++++
+ 8 files changed, 48 insertions(+), 37 deletions(-)
+
+diff --git a/src/control/cmd/daos_server/main.go b/src/control/cmd/daos_server/main.go
+index 99bd3e11e..a4e2424d8 100644
+--- a/src/control/cmd/daos_server/main.go
++++ b/src/control/cmd/daos_server/main.go
+@@ -20,7 +20,6 @@ import (
+ 	"github.com/daos-stack/daos/src/control/fault"
+ 	"github.com/daos-stack/daos/src/control/lib/hardware/hwprov"
+ 	"github.com/daos-stack/daos/src/control/logging"
+-	"github.com/daos-stack/daos/src/control/pbin"
+ )
+ 
+ const (
+@@ -144,9 +143,9 @@ func main() {
+ 	var opts mainOpts
+ 
+ 	// Check this right away to avoid lots of annoying failures later.
+-	if err := pbin.CheckHelper(log, pbin.DaosAdminName); err != nil {
++	/*if err := pbin.CheckHelper(log, pbin.DaosAdminName); err != nil {
+ 		exitWithError(log, err)
+-	}
++	}*/
+ 
+ 	if err := parseOpts(os.Args[1:], &opts, log); err != nil {
+ 		if errors.Cause(err) == context.Canceled {
+diff --git a/src/control/pbin/app.go b/src/control/pbin/app.go
+index 5aa32a41d..5f88dc983 100644
+--- a/src/control/pbin/app.go
++++ b/src/control/pbin/app.go
+@@ -1,5 +1,5 @@
+ //
+-// (C) Copyright 2020-2021 Intel Corporation.
++// (C) Copyright 2020-2022 Intel Corporation.
+ //
+ // SPDX-License-Identifier: BSD-2-Clause-Patent
+ //
+@@ -178,14 +178,14 @@ func (a *App) isCallerPermitted(callerName string) bool {
+ }
+ 
+ func (a *App) checkPrivileges() error {
+-	if !a.process.IsPrivileged() {
+-		return PrivilegedHelperNotPrivileged(a.Name())
+-	}
+-
+-	// hack for stuff that doesn't use geteuid() (e.g. ipmctl)
+-	if err := a.process.ElevatePrivileges(); err != nil {
+-		return err
+-	}
++	// if !a.process.IsPrivileged() {
++	// 	return PrivilegedHelperNotPrivileged(a.Name())
++	// }
++
++	// // hack for stuff that doesn't use geteuid() (e.g. ipmctl)
++	// if err := a.process.ElevatePrivileges(); err != nil {
++	// 	return err
++	// }
+ 
+ 	return nil
+ }
+diff --git a/src/control/pbin/forwarding.go b/src/control/pbin/forwarding.go
+index d658344ca..cba190639 100644
+--- a/src/control/pbin/forwarding.go
++++ b/src/control/pbin/forwarding.go
+@@ -9,6 +9,7 @@ import (
+ 	"context"
+ 	"encoding/json"
+ 	"os"
++	"strconv"
+ 
+ 	"github.com/pkg/errors"
+ 
+@@ -52,6 +53,16 @@ func NewForwarder(log logging.Logger, pbinName string) *Forwarder {
+ 		pbinName: pbinName,
+ 	}
+ 
++	if val, set := os.LookupEnv(DisableReqFwdEnvVar); set {
++		disabled, err := strconv.ParseBool(val)
++		if err != nil {
++			log.Errorf("%s was set to non-boolean value (%q); not disabling",
++				DisableReqFwdEnvVar, val)
++			return fwd
++		}
++		fwd.Disabled = disabled
++	}
++
+ 	return fwd
+ }
+ 
+diff --git a/src/control/pbin/pbin.go b/src/control/pbin/pbin.go
+index 756497d13..ef7ee4881 100644
+--- a/src/control/pbin/pbin.go
++++ b/src/control/pbin/pbin.go
+@@ -19,6 +19,10 @@ const (
+ 	// DaosAdminName is the name of the daos_admin privileged helper.
+ 	DaosAdminName = "daos_admin"
+ 
++	// DisableReqFwdEnvVar is the name of the environment variable which
++	// can be set to disable forwarding requests to the privileged binary.
++	DisableReqFwdEnvVar = "DAOS_DISABLE_REQ_FWD"
++
+ 	// DaosAdminLogFileEnvVar is the name of the environment variable which
+ 	// can be set to enable non-ERROR logging in the privileged binary.
+ 	DaosAdminLogFileEnvVar = "DAOS_ADMIN_LOG_FILE"
+@@ -46,6 +50,10 @@ func CheckHelper(log logging.Logger, helperName string) error {
+ 	dummy := struct{}{}
+ 	pingRes := PingResp{}
+ 
++	if fwd.Disabled {
++		return nil
++	}
++
+ 	if err := fwd.SendReq("Ping", dummy, &pingRes); err != nil {
+ 		err = errors.Cause(err)
+ 		switch {
+diff --git a/src/control/server/server.go b/src/control/server/server.go
+index 0a8f34655..b6aee6af5 100644
+--- a/src/control/server/server.go
++++ b/src/control/server/server.go
+@@ -291,15 +291,15 @@ func (srv *server) addEngines(ctx context.Context) error {
+ 	var allStarted sync.WaitGroup
+ 	registerTelemetryCallbacks(ctx, srv)
+ 
+-	iommuEnabled, err := hwprov.DefaultIOMMUDetector(srv.log).IsIOMMUEnabled()
+-	if err != nil {
+-		return err
+-	}
++	// iommuEnabled, err := hwprov.DefaultIOMMUDetector(srv.log).IsIOMMUEnabled()
++	// if err != nil {
++	// 	return err
++	// }
+ 
+ 	// Allocate hugepages and rebind NVMe devices to userspace drivers.
+-	if err := prepBdevStorage(srv, iommuEnabled); err != nil {
+-		return err
+-	}
++	// if err := prepBdevStorage(srv, iommuEnabled); err != nil {
++	// 	return err
++	// }
+ 
+ 	// Retrieve NVMe device details (before engines are started) so static details can be
+ 	// recovered by the engine storage provider(s) during scan even if devices are in use.
+diff --git a/src/control/server/server_utils.go b/src/control/server/server_utils.go
+index 5ea8ce32a..138abad91 100644
+--- a/src/control/server/server_utils.go
++++ b/src/control/server/server_utils.go
+@@ -287,24 +287,7 @@ func prepBdevStorage(srv *server, iommuEnabled bool) error {
+ 
+ // scanBdevStorage performs discovery and validates existence of configured NVMe SSDs.
+ func scanBdevStorage(srv *server) (*storage.BdevScanResponse, error) {
+-	defer srv.logDuration(track("time to scan bdev storage"))
+-
+-	if srv.cfg.DisableHugepages {
+-		srv.log.Debugf("skip nvme scan as hugepages have been disabled in config")
+-		return &storage.BdevScanResponse{}, nil
+-	}
+-
+-	nvmeScanResp, err := srv.ctlSvc.NvmeScan(storage.BdevScanRequest{
+-		DeviceList:  getBdevDevicesFromCfgs(getBdevCfgsFromSrvCfg(srv.cfg)),
+-		BypassCache: true, // init cache on first scan
+-	})
+-	if err != nil {
+-		err = errors.Wrap(err, "NVMe Scan Failed")
+-		srv.log.Errorf("%s", err)
+-		return nil, err
+-	}
+-
+-	return nvmeScanResp, nil
++	return &storage.BdevScanResponse{}, nil
+ }
+ 
+ func setDaosHelperEnvs(cfg *config.Server, setenv func(k, v string) error) error {
+diff --git a/src/control/server/storage/provider.go b/src/control/server/storage/provider.go
+index 90bf54231..aff889be0 100644
+--- a/src/control/server/storage/provider.go
++++ b/src/control/server/storage/provider.go
+@@ -156,6 +156,9 @@ func createScmFormatRequest(class Class, scmCfg ScmConfig, force bool) (*ScmForm
+ 
+ // ScmNeedsFormat returns true if SCM is found to require formatting.
+ func (p *Provider) ScmNeedsFormat() (bool, error) {
++	// Don't perform a SCM scan.
++	return false, nil
++
+ 	cfg, err := p.GetScmConfig()
+ 	if err != nil {
+ 		return false, err
+@@ -180,6 +183,8 @@ func (p *Provider) ScmNeedsFormat() (bool, error) {
+ 
+ // FormatScm formats SCM based on provider config and force flag.
+ func (p *Provider) FormatScm(force bool) error {
++	// Don't scan anything.
++	return nil
+ 	cfg, err := p.GetScmConfig()
+ 	if err != nil {
+ 		return err
+diff --git a/src/control/server/storage/scm/provider.go b/src/control/server/storage/scm/provider.go
+index aaad8dc85..73ea36312 100644
+--- a/src/control/server/storage/scm/provider.go
++++ b/src/control/server/storage/scm/provider.go
+@@ -331,6 +331,11 @@ func (p *Provider) createScanResponse() *storage.ScmScanResponse {
+ 
+ // Scan attempts to scan the system for SCM storage components.
+ func (p *Provider) Scan(req storage.ScmScanRequest) (*storage.ScmScanResponse, error) {
++	// Don't perform a SCM scan.
++	return &storage.ScmScanResponse{
++		State: storage.ScmStateNoModules,
++	}, nil
++
+ 	if p.isInitialized() && !req.Rescan {
+ 		return p.createScanResponse(), nil
+ 	}
+-- 
+2.37.1
+
