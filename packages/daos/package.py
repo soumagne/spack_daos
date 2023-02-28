@@ -35,16 +35,7 @@ class Daos(SConsPackage):
 
     version('master', branch='master', submodules=True)
    
-    version('2.2.0', branch='release/2.2', submodules=True) 
-    version('2.0.3', tag='v2.0.3', submodules=True)
-    version('2.0.2', tag='v2.0.2', submodules=True)
-    version('2.0.1', tag='v2.0.1', submodules=True)
-    version('1.2.0', tag='v1.2.0', submodules=True)
-    version('1.1.4', tag='v1.1.4', submodules=True)
-    version('1.1.3', tag='v1.1.3', submodules=True)
-    version('1.1.2.1', tag='v1.1.2.1', submodules=True)
-    version('1.1.2', tag='v1.1.2', submodules=True)
-    version('1.1.1', tag='v1.1.1', submodules=True)
+    version('2.2.0', tag='v2.2.0', submodules=True) 
 
     variant('fwd', default=True,
             description='Bypass root setup and privilege helper')
@@ -62,24 +53,14 @@ class Daos(SConsPackage):
     depends_on('libuuid')
     depends_on('libyaml')
     depends_on('openssl')
-    depends_on('pmdk')
-    depends_on('pmdk@1.11.1:', when='@2.0.0:')
+    depends_on('pmdk@1.11.1:')
     depends_on('protobuf-c')
     depends_on('readline')
-    depends_on('spdk@20.01+shared+rdma', when='@1.1.0:1.2.0')
-    depends_on('spdk@21.07+shared+rdma', when='@2.0')
     depends_on('spdk@22.01+shared+rdma', when='@2.2')
     depends_on('libfabric')
 
     depends_on('go', type='build')
 
-    patch('daos_allow_fwd_1_1_1.patch', when='@1.1.1+fwd')
-    patch('daos_load_mpi_1_1_1.patch', when='@1.1.1')    
-    patch('daos_load_mpi_1_1_2.patch', when='@1.1.2')
-    patch('daos_allow_fwd_1_1_2.patch', when='@1.1.2:1.2.0+fwd')
-    patch('daos_load_mpi_1_1_3.patch', when='@1.1.3:1.2.0')
-    patch('daos_dpdk.patch', when='@2.0')
-    patch('daos_allow_fwd_2_0_0.patch', when='@2.0+fwd')
     patch('daos_allow_fwd_2_2_0.patch', when='@2.2+fwd')
 
     def build_args(self, spec, prefix):
