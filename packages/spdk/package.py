@@ -20,6 +20,7 @@ class Spdk(AutotoolsPackage):
     git      = "https://github.com/spdk/spdk"
 
     version('master',  branch='master', submodules=True)
+    version('22.01.2', tag='v22.01.2',  submodules=True)
     version('22.01.1', tag='v22.01.1',  submodules=True)
 
     variant('crypto', default=False, description='Build vbdev crypto module')
@@ -57,7 +58,8 @@ class Spdk(AutotoolsPackage):
     depends_on('numactl')
     depends_on('libaio')
 
-    patch('https://github.com/spdk/spdk/commit/b0aba3fcd5aceceea530a702922153bc75664978.diff', when='@22.01.1', sha256='fe04d364928575397e7ca474ee1dfa32c1ff535b1f31b2deee8748e2a1b3355c')
+    patch('https://github.com/spdk/spdk/commit/445a4c808badbad3942696ecf16fa60e8129a747.diff', when='@22.01', sha256='2e412e218517eed2707b874c76faae7f2debf3e755ef198287d3766aa9c7fab4')
+    patch('https://github.com/spdk/spdk/commit/b0aba3fcd5aceceea530a702922153bc75664978.diff', when='@22.01', sha256='fe04d364928575397e7ca474ee1dfa32c1ff535b1f31b2deee8748e2a1b3355c')
 
     def configure_args(self):
         spec = self.spec
